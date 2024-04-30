@@ -7,7 +7,15 @@ trigger: none
 pool:
   vmImage: ubuntu-latest
 
-
+parameters:
+  - name: TerraformCommand
+    type: string
+    displayName: Terraform Comman
+    default: plan
+    values:
+      - plan
+      - apply -auto-approve
+      - destroy
 stages:
 - stage: validate
   jobs:
@@ -28,6 +36,8 @@ stages:
       workingDirectory: $(System.DefaultWorkingDirectory)
       displayName: 'Run terrascan'
 - stage: dev
+  variables:
+  - group: Dev-AKS
   dependsOn: validate
   jobs:
   - job: Infrastructure
@@ -57,6 +67,6 @@ stages:
     - task: TerraformTaskV4@4
       inputs:
         provider: 'azurerm'
-        command: 'plan'
+        command: ${{ parameters.TerraformCommand }}
         environmentServiceNameAzureRM: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
       
