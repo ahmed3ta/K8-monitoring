@@ -14,7 +14,7 @@ parameters:
     default: plan
     values:
       - plan
-      - apply -auto-approve
+      - apply
       - destroy
 stages:
 - stage: validate
@@ -76,6 +76,8 @@ stages:
         provider: 'azurerm'
         workingDirectory: '$(Build.ArtifactStagingDirectory)'
         command: '${{ parameters.TerraformCommand }}'
+        ${{ if eq(parameters['TerraformCommand'], 'apply') }}:
+          commandOptions: '-auto-approve'
         backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
         backendAzureRmResourceGroupName: 'terraform-backend'
         backendAzureRmStorageAccountName: 'terraformbackend30042024'
