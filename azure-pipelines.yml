@@ -51,14 +51,21 @@ stages:
         tokenPrefix: '#{'
         tokenSuffix: '}#'
         enableTelemetry: false
-    - task: TerraformInstaller@0
-      displayName: 'Install Terraform 1.8.2'
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifacts
       inputs:
-        terraformVersion: '1.8.2'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform $(terraform_version)'
+      inputs:
+        terraformVersion: '$(terraform_version)'
     - task: TerraformTaskV4@4
       inputs:
         provider: 'azurerm'
         command: 'init'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
         backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
         backendAzureRmResourceGroupName: 'terraform-backend'
         backendAzureRmStorageAccountName: 'terraformbackend30042024'
@@ -67,6 +74,7 @@ stages:
     - task: TerraformTaskV2@2
       inputs:
         provider: 'azurerm'
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
         command: '${{ parameters.TerraformCommand }}'
         backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
         backendAzureRmResourceGroupName: 'terraform-backend'
