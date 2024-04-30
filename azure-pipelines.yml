@@ -1,0 +1,72 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+parameters:
+  - name: TerraformCommand
+    type: string
+    displayName: Terraform Comman
+    default: plan
+    values:
+      - plan
+      - apply -auto-approve
+      - destroy
+stages:
+- stage: validate
+  jobs:
+  - job: Compliance
+    displayName: 'Run Terrascan to check for compliance'
+    steps:
+    - script: |
+        curl --location https://github.com/accurics/terrascan/releases/download/v1.3.1/terrascan_1.3.1_Linux_x86_64.tar.gz --output terrascan.tar.gz
+        tar -xvf terrascan.tar.gz
+        sudo install terrascan /usr/local/bin
+        curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+        tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+        sudo install terrascan /usr/local/bin && rm terrascan
+      displayName: 'Get tools'
+
+    - script: |
+        terrascan scan -t azure -i terraform
+      workingDirectory: $(System.DefaultWorkingDirectory)
+      displayName: 'Run terrascan'
+- stage: dev
+  variables:
+  - group: Dev-AKS
+  dependsOn: validate
+  jobs:
+  - job: Infrastructure
+    steps:
+    # This task is for replacing the tokens with Azure Devops Variables.
+    - task: replacetokens@6
+      inputs:
+        root: '$(System.DefaultWorkingDirectory)'
+        sources: '**/*'
+        escape: off
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        enableTelemetry: false
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform 1.8.2'
+      inputs:
+        terraformVersion: '1.8.2'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+        backendAzureRmResourceGroupName: 'terraform-backend'
+        backendAzureRmStorageAccountName: 'terraformbackend30042024'
+        backendAzureRmContainerName: 'tfbackend'
+        backendAzureRmKey: '$(tfbackend_key)'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: ${{ parameters.TerraformCommand }}
+        environmentServiceNameAzureRM: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+      

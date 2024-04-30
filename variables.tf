@@ -1,16 +1,16 @@
 variable "resource_group_name" {
   type = string
-  default = "k8s-with-monitoring"
+  default = "#{resource_group_name}#"
 }
 
 variable "location" {
   type = string
-  default = "West Europe"
+  default = "#{location}#"
 }
 
 variable "kubernetes_cluster_name" {
   type = string
-  default = "kubernetes-cluster"
+  default = "#{kubernetes_cluster_name}#"
 }
 
 variable "node_pool_vm_size" {
@@ -21,6 +21,6 @@ variable "node_pool_vm_size" {
 variable "tags" {
   type = map(string)
   default = {
-    Environment = "dev"
+    Environment = "#{environment}#"
   }
 }
