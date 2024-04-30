@@ -2,7 +2,7 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
-
+trigger: none
 
 pool:
   vmImage: ubuntu-latest
@@ -27,3 +27,36 @@ stages:
         terrascan scan -t azure -i terraform
       workingDirectory: $(System.DefaultWorkingDirectory)
       displayName: 'Run terrascan'
+- stage: dev
+  dependsOn: validate
+  jobs:
+  - job: Infrastructure
+    steps:
+    # This task is for replacing the tokens with Azure Devops Variables.
+    - task: replacetokens@6
+      inputs:
+        root: '$(System.DefaultWorkingDirectory)'
+        sources: '**/*'
+        escape: off
+        tokenPrefix: '#{'
+        tokenSuffix: '}#'
+        enableTelemetry: false
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform 1.8.2'
+      inputs:
+        terraformVersion: '1.8.2'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+        backendAzureRmResourceGroupName: 'terraform-backend'
+        backendAzureRmStorageAccountName: 'terraformbackend30042024'
+        backendAzureRmContainerName: 'tfbackend'
+        backendAzureRmKey: '$(tfbackend_key)'
+    - task: TerraformTaskV4@4
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+      
