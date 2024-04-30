@@ -21,6 +21,6 @@ variable "node_pool_vm_size" {
 variable "tags" {
   type = map(string)
   default = {
-    Environment = "dev"
+    Environment = "#{environment}#"
   }
 }
