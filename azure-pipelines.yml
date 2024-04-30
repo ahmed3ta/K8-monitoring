@@ -10,12 +10,12 @@ pool:
 parameters:
   - name: TerraformCommand
     type: string
-    displayName: Terraform Comman
+    displayName: Terraform Command
     default: plan
     values:
-      - 'plan'
-      - 'apply -auto-approve'
-      - 'destroy'
+      - plan
+      - apply -auto-approve
+      - destroy
 stages:
 - stage: validate
   jobs:
@@ -64,9 +64,12 @@ stages:
         backendAzureRmStorageAccountName: 'terraformbackend30042024'
         backendAzureRmContainerName: 'tfbackend'
         backendAzureRmKey: '$(tfbackend_key)'
-    - task: TerraformTaskV4@4
+    - task: TerraformTaskV2@2
       inputs:
         provider: 'azurerm'
-        command: ${{ parameters.TerraformCommand }}
-        environmentServiceNameAzureRM: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
-      
+        command: '${{ parameters.TerraformCommand }}'
+        backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+        backendAzureRmResourceGroupName: 'terraform-backend'
+        backendAzureRmStorageAccountName: 'terraformbackend30042024'
+        backendAzureRmContainerName: 'tfbackend'
+        backendAzureRmKey: '$(tfbackend_key)'
