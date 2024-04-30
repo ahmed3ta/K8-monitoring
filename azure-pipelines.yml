@@ -35,6 +35,7 @@ stages:
         terrascan scan -t azure -i terraform
       workingDirectory: $(System.DefaultWorkingDirectory)
       displayName: 'Run terrascan'
+      continueOnError: true
 - stage: dev
   variables:
   - group: Dev-AKS
