@@ -35,7 +35,7 @@ stages:
     # This task is for replacing the tokens with Azure Devops Variables.
     - task: replacetokens@6
       inputs:
-        root: '''$(System.DefaultWorkingDirectory)'
+        root: '$(System.DefaultWorkingDirectory)'
         sources: '**/*'
         escape: off
         tokenPrefix: '#{'
