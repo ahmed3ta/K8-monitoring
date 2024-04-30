@@ -72,3 +72,8 @@ stages:
         ${{ if eq(parameters['TerraformCommand'], 'apply') }}:
           commandOptions: '-auto-approve'
         environmentServiceNameAzureRM: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+        backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
+        backendAzureRmResourceGroupName: 'terraform-backend'
+        backendAzureRmStorageAccountName: 'terraformbackend30042024'
+        backendAzureRmContainerName: 'tfbackend'
+        backendAzureRmKey: '$(tfbackend_key)'
