@@ -30,6 +30,7 @@ resource "azurerm_kubernetes_cluster" "k8s_cluster" {
   name                = var.kubernetes_cluster_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  dns_prefix          = "aks"
 
   default_node_pool {
     name       = "default"
