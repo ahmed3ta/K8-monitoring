@@ -5,6 +5,12 @@ terraform {
       version = "3.101.0"
     }
   }
+  backend "azurerm" {
+      resource_group_name  = "terraform-backend"
+      storage_account_name = "$(tfbackend_sa)"
+      container_name       = "$(tfbackend_container)"
+      key                  = "$(tfbackend_key)"
+  }
 }
 
 provider "azurerm" {
@@ -18,13 +24,6 @@ provider "azurerm" {
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
-}
-
-resource "azurerm_management_lock" "resource-group-level" {
-  name       = "resource-group-level"
-  scope      = azurerm_resource_group.rg.id
-  lock_level = "CanNotDelete"
-  notes      = "Resources in this resource group can't be deleted."
 }
 
 resource "azurerm_kubernetes_cluster" "k8s_cluster" {
