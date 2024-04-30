@@ -20,13 +20,6 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "azurerm_management_lock" "resource-group-level" {
-  name       = "resource-group-level"
-  scope      = azurerm_resource_group.rg.id
-  lock_level = "CanNotDelete"
-  notes      = "Resources in this resource group can't be deleted."
-}
-
 resource "azurerm_kubernetes_cluster" "k8s_cluster" {
   name                = var.kubernetes_cluster_name
   location            = azurerm_resource_group.rg.location
