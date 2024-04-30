@@ -5,6 +5,12 @@ terraform {
       version = "3.101.0"
     }
   }
+  backend "azurerm" {
+      resource_group_name  = "terraform-backend"
+      storage_account_name = "$(tfbackend_sa)"
+      container_name       = "$(tfbackend_container)"
+      key                  = "$(tfbackend_key)"
+  }
 }
 
 provider "azurerm" {
