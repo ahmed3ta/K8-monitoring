@@ -13,9 +13,9 @@ parameters:
     displayName: Terraform Comman
     default: plan
     values:
-      - plan
-      - apply -auto-approve
-      - destroy
+      - 'plan'
+      - 'apply -auto-approve'
+      - 'destroy'
 stages:
 - stage: validate
   jobs:
