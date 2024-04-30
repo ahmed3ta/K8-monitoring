@@ -51,12 +51,6 @@ stages:
         tokenPrefix: '#{'
         tokenSuffix: '}#'
         enableTelemetry: false
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Build Artifacts
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
     - task: TerraformInstaller@0
       displayName: 'Install Terraform $(terraform_version)'
       inputs:
@@ -65,7 +59,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(Build.ArtifactStagingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
         backendServiceArm: 'Ahmed Atta Sandbox Sub(eca10a92-9242-45e3-ab37-bbe5c5e81dd8)'
         backendAzureRmResourceGroupName: 'terraform-backend'
         backendAzureRmStorageAccountName: 'terraformbackend30042024'
@@ -74,7 +68,7 @@ stages:
     - task: TerraformTaskV2@2
       inputs:
         provider: 'azurerm'
-        workingDirectory: '$(Build.ArtifactStagingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
         command: '${{ parameters.TerraformCommand }}'
         ${{ if eq(parameters['TerraformCommand'], 'apply') }}:
           commandOptions: '-auto-approve'
